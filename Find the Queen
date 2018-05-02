@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/**************************************************
+* This utility makes use of the functions srand() * 
+* and rand() from time.h and shuffles the         *
+* elements in the char array list.                *
+*                                                 *
+* Input:                                          *
+*     cards - address of the char array           *
+*     size  - size of the array                   *
+*                                                 *
+* Output:                                         *
+*     Nothing                                     *
+**************************************************/
+void shuffleDeck(char *cards, int size)
+{
+    /* Use computer's internal clock to control the 
+       choice of the seed so we don't get the same
+       shuffle order everytime this is run. */
+    srand( time(NULL) );
+    
+    for (int i = 0; i < size; i++)
+    {
+        /* j is a random index from the array */
+        int j = rand() % (size);
+        
+        /* Swap the current index with the random index */
+        char tmp = cards[i];
+        cards[i] = cards[j];
+        cards[j] = tmp;
+    }
+}
+
+/**************************************************
+* This utility asks the user to guess on which    * 
+* position is the queen in a deck of cards that   *
+* has only J, Q, K, and A. If the user's guess is *
+* correct, user wins the bet amount which gets    *
+* added to his/her total cash. Otherwise, the     *
+* user loses the bet money.                       *
+*                                                 *
+* Input:                                          *
+*     sum   - User's buy in amount                *
+*     bet   - Money bet by user in this round     *
+*                                                 *
+* Output:                                         *
+*     Nothing                                     *
+**************************************************/
+void playGame(int *sum, int bet)
+{
+    char cards[] = {'J', 'Q', 'K', 'A'};
+    int pos;
+    
+    /* Shuffle order */
+    shuffleDeck(cards, ((sizeof(cards)) / (sizeof(cards[0]))));
+    
+    printf("Guess the position of Queen(1-4): ");
+    scanf("%d", &pos);
+    
+    if (cards[pos-1] == 'Q')
+    {
+        printf("WIN!!\n");
+        *sum += bet;
+        printf("Cash balance: $%d\n", *sum);
+    }
+    else
+    {
+        printf("LOSER!\n");
+        *sum -= bet;
+        printf("Cash balance: $%d\n", *sum);
+    }
+    
+    return;
+}
+
+/***************************************/
+
+int main()
+{
+    int sum = 100;
+    int minBet = 10;
+    int bet;
+    
+    while (sum >= minBet)
+    {
+        printf("Enter bet amount: $");
+        scanf("%d", &bet);
+        
+        if (bet < minBet)
+        {
+            printf("The min bet amount is 10$.");
+            continue;
+        }
+        
+        if (bet > sum)
+        {
+            printf("Insufficient funds.");
+            continue;
+        }
+        
+        playGame(&sum, bet);
+    }
+
+    if (sum < minBet)
+    {
+        printf("Game Over.\n");
+    }
+}
